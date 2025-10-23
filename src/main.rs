@@ -30,8 +30,7 @@ and ~strikethrough~.
 fn main() {
     let mut po = ParseOptions::gfm();
     po.constructs.frontmatter = true;
-    // po.constructs.gfm_strikethrough = true;
-    let ast = markdown::to_mdast(&DEMO_MD, &po).unwrap();
+    let ast = markdown::to_mdast(DEMO_MD, &po).unwrap();
     print_node(&ast, 0);
 }
 
@@ -39,66 +38,61 @@ fn print_node(node: &Node, depth: usize) {
     let prefix = " ".repeat(depth * 2);
     match node {
         Node::Root(n) => {
-            println!("{}{}", prefix, "(Root)");
+            println!("{}(Root)", prefix);
             n.children.iter().for_each(|c| {
                 print_node(c, depth + 1);
             });
         }
         Node::Heading(n) => {
-            println!("{}{}", prefix, "(Heading)");
+            println!("{}(Heading)", prefix);
             n.children.iter().for_each(|c| {
                 print_node(c, depth + 1);
             });
         }
         Node::Paragraph(n) => {
-            println!("{}{}", prefix, "(Paragraph)");
+            println!("{}(Paragraph)", prefix);
             n.children.iter().for_each(|c| {
                 print_node(c, depth + 1);
             });
         }
         Node::Yaml(n) => {
-            println!("{}{}", prefix, "(YAML)");
+            println!("{}(YAML)", prefix);
             println!("{}  {:?}", prefix, n.value);
         }
         Node::Text(n) => {
-            println!("{}{}", prefix, "(Text)");
+            println!("{}(Text)", prefix);
             println!("{}  {:?}", prefix, n.value);
         }
         Node::InlineCode(n) => {
-            println!("{}{}", prefix, "(InlineCode)");
+            println!("{}(InlineCode)", prefix);
             println!("{}  {:?}", prefix, n.value);
         }
         Node::Strong(n) => {
-            println!("{}{}", prefix, "(Bold)");
+            println!("{}(Bold)", prefix);
             n.children.iter().for_each(|c| {
                 print_node(c, depth + 1);
             });
         }
         Node::Emphasis(n) => {
-            println!("{}{}", prefix, "(Italic)");
+            println!("{}(Italic)", prefix);
             n.children.iter().for_each(|c| {
                 print_node(c, depth + 1);
             });
         }
         Node::Delete(n) => {
-            println!("{}{}", prefix, "(Strikethrough)");
+            println!("{}(Strikethrough)", prefix);
             n.children.iter().for_each(|c| {
                 print_node(c, depth + 1);
             });
         }
         Node::Code(n) => {
-            println!("{}{}", prefix, "(Code)");
+            println!("{}(Code)", prefix);
             println!(
                 "{}  Type: {}",
                 prefix,
                 n.lang.as_deref().unwrap_or("(None)")
             );
-            println!(
-                "{}  Meta: {}",
-                prefix,
-                // n.meta.as_deref().unwrap_or("(None)")
-                parse_meta(&n.meta),
-            );
+            println!("{}  Meta: {}", prefix, parse_meta(&n.meta),);
             println!("{}  Content: {:?}", prefix, n.value);
         }
         _ => {}
