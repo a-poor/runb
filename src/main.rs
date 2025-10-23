@@ -1,3 +1,10 @@
+mod app;
+mod cli;
+mod conf;
+mod db;
+mod runner;
+mod tui;
+
 use markdown::ParseOptions;
 use markdown::mdast::Node;
 
@@ -11,27 +18,19 @@ and continues along here.
 
 This is the 2nd paragraph.
 
-```json
+```json {"id": "001", "runnable": true}
 {"foo": "bar", "baz": 42"}
 ```
 
-Mid-way paragraph.
-
-```json title="foo.json" linenums
-{"foo": "bar", "baz": 42"}
-```
-What about this?
-
-``` {.python title="foo.json" linenums}
-{"foo": "bar", "baz": 42"}
-```
-Last paragraph.
+Last paragraph with *italic*, **bold**, `code`,
+and ~strikethrough~.
 
 "#;
 
 fn main() {
     let mut po = ParseOptions::gfm();
     po.constructs.frontmatter = true;
+    // po.constructs.gfm_strikethrough = true;
     let ast = markdown::to_mdast(&DEMO_MD, &po).unwrap();
     print_node(&ast, 0);
 }
@@ -65,6 +64,28 @@ fn print_node(node: &Node, depth: usize) {
             println!("{}{}", prefix, "(Text)");
             println!("{}  {:?}", prefix, n.value);
         }
+        Node::InlineCode(n) => {
+            println!("{}{}", prefix, "(InlineCode)");
+            println!("{}  {:?}", prefix, n.value);
+        }
+        Node::Strong(n) => {
+            println!("{}{}", prefix, "(Bold)");
+            n.children.iter().for_each(|c| {
+                print_node(c, depth + 1);
+            });
+        }
+        Node::Emphasis(n) => {
+            println!("{}{}", prefix, "(Italic)");
+            n.children.iter().for_each(|c| {
+                print_node(c, depth + 1);
+            });
+        }
+        Node::Delete(n) => {
+            println!("{}{}", prefix, "(Strikethrough)");
+            n.children.iter().for_each(|c| {
+                print_node(c, depth + 1);
+            });
+        }
         Node::Code(n) => {
             println!("{}{}", prefix, "(Code)");
             println!(
@@ -75,10 +96,21 @@ fn print_node(node: &Node, depth: usize) {
             println!(
                 "{}  Meta: {}",
                 prefix,
-                n.meta.as_deref().unwrap_or("(None)")
+                // n.meta.as_deref().unwrap_or("(None)")
+                parse_meta(&n.meta),
             );
             println!("{}  Content: {:?}", prefix, n.value);
         }
         _ => {}
+    }
+}
+
+fn parse_meta(meta: &Option<String>) -> String {
+    match meta {
+        None => "(None)".to_string(),
+        Some(s) => match serde_json::from_str::<serde_json::Value>(s) {
+            Ok(val) => format!("{:?}", val),
+            Err(_err) => format!("(Not parsed) {}", s),
+        },
     }
 }
