@@ -1,4 +1,5 @@
 mod app;
+mod books;
 mod cli;
 mod conf;
 mod db;
