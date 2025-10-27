@@ -22,8 +22,21 @@ pub const DEFAULT_CONFIG_FILE_NAME: &str = "config.toml";
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 pub struct ConfigFile {
+    /// The config file schema version
+    ///
+    /// Note: This is currently explicitly set
+    /// but in a future version it can be used
+    /// to switch on
     #[validate(custom(function = "is_v0"))]
     pub version: String,
+}
+
+impl Default for ConfigFile {
+    fn default() -> Self {
+        ConfigFile {
+            version: "v0".to_string(),
+        }
+    }
 }
 
 impl ConfigFile {
