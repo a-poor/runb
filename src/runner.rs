@@ -11,3 +11,9 @@ pub enum TaskStatus {
     Failed,
     Canceled,
 }
+
+/// A task wraps a command being executed
+/// in a runbook.
+pub struct Task {
+    status: TaskStatus,
+}

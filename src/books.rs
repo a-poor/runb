@@ -5,6 +5,8 @@ use markdown::mdast::{Code, Node, Root};
 use serde::{Deserialize, Serialize};
 // use std::path::PathBuf;
 
+/// A runbook is a handle for running the code
+/// cells in a markdown runbook.
 pub struct Runbook {
     /// Stores the root markdown ast node
     mdroot: Root,
@@ -48,9 +50,11 @@ impl Runbook {
     }
 }
 
-/// The structure of a runbook's frontmatter.
-#[derive(Debug, Clone, Deserialize)]
-pub struct BookFrontmatter {}
+/// The structure of a runbook markdown file's frontmatter.
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct BookFrontmatter {
+    pub version: String,
+}
 
 /// The structure of a runbook markdown code block's
 /// meta section -- which is stored as json.

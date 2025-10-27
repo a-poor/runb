@@ -32,6 +32,7 @@ echo "Hello, ${NAME}!"
 ```bash
 echo 'Starting...'
 curl https://example.com > /dev/null
+exit 1 # Demo
 ```
 
 The end.
